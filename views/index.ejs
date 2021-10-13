@@ -1,0 +1,13 @@
+    <h1>Ini loh</h1>
+    <h2>Selamat datang tuan <%= nama %> </h2>
+
+    <h3>Daftar user</h3>
+    <% if (user.length < 1) { %>
+     <p>Data kosong brow</p>
+    <% } %>
+    <% user.forEach(u => { %>
+        <ul>
+            <li>Nama : <%= u.nama %> </li>
+            <li>Email : <%= u.email %> </li>
+        </ul>     
+    <% }) %>
