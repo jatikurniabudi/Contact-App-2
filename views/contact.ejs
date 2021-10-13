@@ -3,7 +3,11 @@
         <div class="col-md-8">
             <h2>Contact List</h2>
 
-            <a href="/contact/add" class="btn btn-primary mb-1" >Add Contact</a>
+            <a href="/contact/add" class="btn btn-primary mb-1">Add Contact</a>
+
+            <% if (msg.length !== 0) { %>
+                <div class="alert alert-success" role='alert'><%= msg   %> </div>
+              <% } %>
 
         </div>
     </div>

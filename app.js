@@ -3,8 +3,17 @@ const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const morgan = require("morgan");
 const app = express();
-const port = 2000;
-const { loadKontak, findContact } = require("./utils/contact.js");
+const port = 3000;
+const {
+  loadKontak,
+  findContact,
+  addContact,
+  duplicateCek,
+} = require("./utils/contact.js");
+const { body, validationResult, check } = require("express-validator");
+const session = require("express-session");
+const cookieparser = require("cookie-parser");
+const flash = require("connect-flash");
 
 //using EJS
 app.set("view engine", "ejs");
@@ -15,6 +24,19 @@ app.use(morgan("dev"));
 
 //Built-in middleware
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+
+//Config Flash
+app.use(cookieparser("secret"));
+app.use(
+  session({
+    cookie: { maxAge: 5000 },
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+app.use(flash());
 
 app.get("/", (req, res) => {
   // res.sendFile("./index.html", { root: __dirname });
@@ -44,6 +66,7 @@ app.get("/about", (req, res) => {
   });
 });
 
+//Contact Page
 app.get("/contact", (req, res) => {
   const contacts = loadKontak();
 
@@ -51,9 +74,52 @@ app.get("/contact", (req, res) => {
     title: "Ini Halaman Contact",
     layout: "layout/main-layout",
     contacts,
+    msg: req.flash("msg"),
   });
 });
 
+//Add contact page
+app.get("/contact/add", (req, res) => {
+  res.render("add-contact", {
+    title: "Add Contact",
+    layout: "layout/main-layout",
+  });
+});
+
+//Add data contact
+app.post(
+  "/contact",
+  [
+    body("nama").custom((value) => {
+      const duplicate = duplicateCek(value);
+      if (duplicate) {
+        throw new Error("Name Already Exists!");
+      }
+      return true;
+    }),
+    check("email", "Wrong Email").isEmail(),
+    check("noHP", "Wrong Phone Number").isMobilePhone("id-ID"),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // return res.status(400).json({ errors: errors.array() });
+      res.render("add-contact", {
+        title: "Add Contact",
+        layout: "layout/main-layout",
+        errors: errors.array(),
+      });
+    } else {
+      addContact(req.body);
+
+      //send flash message
+      req.flash("msg", "Data entered successfully");
+      res.redirect("/contact");
+    }
+  }
+);
+
+//Detail contact page
 app.get("/contact/:nama", (req, res) => {
   const detailKontak = findContact(req.params.nama);
 
