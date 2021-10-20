@@ -9,6 +9,7 @@ const {
   findContact,
   addContact,
   duplicateCek,
+  deleteContact,
 } = require("./utils/contact.js");
 const { body, validationResult, check } = require("express-validator");
 const session = require("express-session");
@@ -118,6 +119,21 @@ app.post(
     }
   }
 );
+
+//Delete contact
+app.get("/contact/delete/:nama", (req, res) => {
+  const contact = findContact(req.params.nama);
+
+  if (!contact) {
+    res.status(404);
+    res.send("Data not found");
+  } else {
+    deleteContact(req.params.nama);
+    //send flash message
+    req.flash("msg", "Data deleted successfully");
+    res.redirect("/contact");
+  }
+});
 
 //Detail contact page
 app.get("/contact/:nama", (req, res) => {

@@ -13,10 +13,11 @@
                   <h5 class="card-title"><%= detailKontak.nama %> </h5>
                   <h6 class="card-subtitle mb-2 text-muted"><%= detailKontak.noHP %> </h6>
                   <p class="card-text"><%= detailKontak.email %> </p>
-                  <a href="/contact" class="card-link">Back</a>
+                  <a href="/contact/delete/<%= detailKontak.nama %>" class="btn btn-danger badge" onclick="return confirm('Data will be deleted!!')">Delete</a>
+                  <a href="/contact" class="card-link d-block mt-2">Back</a>
                 </div>
               </div>
-            <% } %> 
+            <% } %>  
         </div>
     </div>
 </div>
