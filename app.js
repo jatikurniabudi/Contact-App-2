@@ -10,6 +10,7 @@ const {
   addContact,
   duplicateCek,
   deleteContact,
+  updateContact,
 } = require("./utils/contact.js");
 const { body, validationResult, check } = require("express-validator");
 const session = require("express-session");
@@ -171,11 +172,10 @@ app.post(
         contact: req.body,
       });
     } else {
-      res.send(req.body);
-      // addContact(req.body);
-      // //send flash message
-      // req.flash("msg", "Data entered successfully");
-      // res.redirect("/contact");
+      updateContact(req.body);
+      //send flash message
+      req.flash("msg", "Data updated successfully");
+      res.redirect("/contact");
     }
   }
 );

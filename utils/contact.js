@@ -52,10 +52,24 @@ const deleteContact = (nama) => {
   saveContact(newContact);
 };
 
+//Edit contact
+const updateContact = (kontakBaru) => {
+  const contacts = loadKontak();
+
+  const newContact = contacts.filter(
+    (contact) => contact.nama !== kontakBaru.nama
+  );
+
+  delete kontakBaru.oldNama;
+  newContact.push(kontakBaru);
+  saveContact(newContact);
+};
+
 module.exports = {
   loadKontak,
   findContact,
   addContact,
   duplicateCek,
   deleteContact,
+  updateContact,
 };
