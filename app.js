@@ -135,6 +135,51 @@ app.get("/contact/delete/:nama", (req, res) => {
   }
 });
 
+//Edit data form
+app.get("/contact/edit/:nama", (req, res) => {
+  const contact = findContact(req.params.nama);
+
+  res.render("edit-contact", {
+    title: "Edit Contact",
+    layout: "layout/main-layout",
+    contact,
+  });
+});
+
+//edit data
+app.post(
+  "/contact/update",
+  [
+    body("nama").custom((value, { req }) => {
+      const duplicate = duplicateCek(value);
+      if (value !== req.body.oldNama && duplicate) {
+        throw new Error("Name Already Exists!");
+      }
+      return true;
+    }),
+    check("email", "Wrong Email").isEmail(),
+    check("noHP", "Wrong Phone Number").isMobilePhone("id-ID"),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // return res.status(400).json({ errors: errors.array() });
+      res.render("edit-contact", {
+        title: "Edit Contact",
+        layout: "layout/main-layout",
+        errors: errors.array(),
+        contact: req.body,
+      });
+    } else {
+      res.send(req.body);
+      // addContact(req.body);
+      // //send flash message
+      // req.flash("msg", "Data entered successfully");
+      // res.redirect("/contact");
+    }
+  }
+);
+
 //Detail contact page
 app.get("/contact/:nama", (req, res) => {
   const detailKontak = findContact(req.params.nama);
